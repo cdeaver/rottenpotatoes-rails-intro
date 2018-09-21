@@ -13,9 +13,9 @@ class MoviesController < ApplicationController
   def index
     @sort_choice = params[:sort]
     case @sort_choice
-    when 'title'
+    when 'title_header'
       @movies = Movie.order(title: :asc)
-    when 'rel_date'
+    when 'release_date_header'
       @movies = Movie.order(release_date: :asc)
     when nil
       @movies = Movie.all
