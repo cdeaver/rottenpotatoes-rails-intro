@@ -15,7 +15,8 @@ class MoviesController < ApplicationController
     sort_choice = params[:sort]
     #handles case when ratings is empty 
     if params[:ratings] == nil
-      @selected_ratings = {'G' => 1, 'PG' => 1, 'PG-13' => 1, 'R' => 1, 'NC-17' => 1}
+      @selected_ratings = @all_ratings.map { |key| [key, 1] }.to_h
+      #{'G' => 1, 'PG' => 1, 'PG-13' => 1, 'R' => 1, 'NC-17' => 1}
     else
       @selected_ratings = params[:ratings]
     end
