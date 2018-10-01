@@ -12,13 +12,23 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
-    sort_choice = params[:sort]
+    if params[:sort] == nil
+      sort_choice = session[:sort] #keep old settings
+    else
+      sort_choice = params[:sort]
+      session[:sort] = params[:sort] #update session
+    end 
     #handles case when ratings is empty 
     if params[:ratings] == nil
-      @selected_ratings = @all_ratings.map { |key| [key, 1] }.to_h
-      #{'G' => 1, 'PG' => 1, 'PG-13' => 1, 'R' => 1, 'NC-17' => 1}
+      if session[:ratings] == nil #if both empty then select all
+        @selected_ratings = @all_ratings.map { |key| [key, 1] }.to_h
+        session[:ratings] = @selected_ratings
+      else
+        @selected_ratings = session[:ratings] #keep settings
+      end 
     else
       @selected_ratings = params[:ratings]
+      session[:ratings] = params[:ratings] #update session
     end
     
     case sort_choice
@@ -33,6 +43,7 @@ class MoviesController < ApplicationController
       
     end
     
+    
   end
 
   def new
@@ -42,6 +53,7 @@ class MoviesController < ApplicationController
   def create
     @movie = Movie.create!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully created."
+    flash.keep
     redirect_to movies_path
   end
 
@@ -53,6 +65,7 @@ class MoviesController < ApplicationController
     @movie = Movie.find params[:id]
     @movie.update_attributes!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully updated."
+    flash.keep
     redirect_to movie_path(@movie)
   end
 
@@ -60,6 +73,7 @@ class MoviesController < ApplicationController
     @movie = Movie.find(params[:id])
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
+    flash.keep
     redirect_to movies_path
   end
 
